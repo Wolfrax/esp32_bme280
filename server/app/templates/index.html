@@ -251,6 +251,7 @@
         <h1 id="mainTitle">ESP Data Dashboard</h1>
         <p>Live and historical readings</p>
       </div>
+      <div class="nav-links" id="navLinks"></div>
     </div>
 
     <div class="grid top">
@@ -381,6 +382,25 @@
 
   const apiPrefix = getApiPrefix();
   const nodeId = getNodeIdFromUrl();
+
+  const NODE_NAV = {
+    "esp32-7619F0_Viltstigen": {
+      href: "/esp32_bme280/node/esp32-761870_Gu_",
+      label: "Guö"
+    },
+    "esp32-761870_Gu_": {
+      href: "/esp32_bme280/node/esp32-7619F0_Viltstigen",
+      label: "Viltstigen Orangeri"
+    }
+  };
+
+  function renderNavLinks() {
+    const el = document.getElementById("navLinks");
+    if (!el || !nodeId) return;
+    const link = NODE_NAV[nodeId];
+    if (!link) return;
+    el.innerHTML = `<a href="${link.href}">${escapeHtml(link.label)}</a>`;
+  }
 
   function escapeHtml(value) {
     return String(value)
@@ -676,6 +696,7 @@
   }
 
   async function initDashboard() {
+    renderNavLinks();
     try {
       if (!nodeId) {
         document.title = "No node selected";
