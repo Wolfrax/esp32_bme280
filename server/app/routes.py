@@ -5,9 +5,64 @@ import json
 import os
 import re
 import threading
+import paho.mqtt.publish as mqtt_pub
 
 
 DATA_DIR = "data"
+
+MQTT_HOST = os.environ.get("MQTT_HOST", "localhost")
+MQTT_PORT = int(os.environ.get("MQTT_PORT", "1883"))
+
+
+def _mqtt_publish(node_id, node, temp, humidity, pressure):
+    node_name = node.get("name", node_id)
+    location = node.get("location", "")
+    device_name = f"{node_name} {location}".strip()
+
+    state_topic = f"homeassistant/sensor/{node_id}/state"
+    device_info = {
+        "identifiers": [node_id],
+        "name": device_name,
+        "model": "ESP32 + BME280",
+        "manufacturer": "DIY",
+    }
+
+    sensors = [
+        {"metric": "temperature", "name": "Temperature", "device_class": "temperature",           "unit": "°C",  "key": "temperature"},
+        {"metric": "humidity",    "name": "Humidity",    "device_class": "humidity",              "unit": "%",   "key": "humidity"},
+        {"metric": "pressure",    "name": "Pressure",    "device_class": "atmospheric_pressure",  "unit": "hPa", "key": "pressure"},
+    ]
+
+    messages = []
+    for s in sensors:
+        config = {
+            "name": s["name"],
+            "device_class": s["device_class"],
+            "state_topic": state_topic,
+            "unit_of_measurement": s["unit"],
+            "value_template": f"{{{{ value_json.{s['key']} }}}}",
+            "unique_id": f"{node_id}_{s['metric']}",
+            "device": device_info,
+        }
+        messages.append({
+            "topic": f"homeassistant/sensor/{node_id}_{s['metric']}/config",
+            "payload": json.dumps(config),
+            "retain": True,
+            "qos": 1,
+        })
+
+    messages.append({
+        "topic": state_topic,
+        "payload": json.dumps({
+            "temperature": round(temp, 2),
+            "humidity": round(humidity, 2),
+            "pressure": round(pressure, 2),
+        }),
+        "retain": False,
+        "qos": 0,
+    })
+
+    mqtt_pub.multiple(messages, hostname=MQTT_HOST, port=MQTT_PORT)
 
 
 def safe_id(value):
@@ -236,6 +291,11 @@ def post_data():
             node=node,
             logs=logs,
         )
+
+        try:
+            _mqtt_publish(node_id, node, sample["t"], sample["h"], sample["p"])
+        except Exception as mqtt_err:
+            print(f"MQTT publish failed for {node_id}: {mqtt_err}")
 
         return jsonify({
             "status": "ok",
