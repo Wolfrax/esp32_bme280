@@ -58,8 +58,8 @@ def _mqtt_publish(node_id, node, temp, humidity, pressure):
             "humidity": round(humidity, 2),
             "pressure": round(pressure, 2),
         }),
-        "retain": False,
-        "qos": 0,
+        "retain": True,
+        "qos": 1,
     })
 
     mqtt_pub.multiple(messages, hostname=MQTT_HOST, port=MQTT_PORT)
