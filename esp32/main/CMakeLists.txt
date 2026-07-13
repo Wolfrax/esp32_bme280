@@ -1,9 +1,10 @@
 idf_component_register(
     SRCS
-        # "wifi.c"
+        "wifi.c"
         "i2c_reader.c"
-        # "main.c"
-        "i2c_scanner.c"
+        "main.c"
+        "max17048.c"
+        # "i2c_scanner.c"
         # "bme280_check.c"
     INCLUDE_DIRS "."
     PRIV_REQUIRES

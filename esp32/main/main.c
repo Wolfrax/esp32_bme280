@@ -18,6 +18,7 @@
 #include "driver/gpio.h"
 #include "globals.h"
 #include "i2c_reader.h"
+#include "max17048.h"
 #include "wifi.h"
 #include "esp_wifi.h"
 #include "esp_crt_bundle.h"
@@ -43,6 +44,8 @@ RTC_DATA_ATTR static int log_index = 0;
 typedef struct {
     char ts[32];
     float t, h, p;
+    float batt_v, batt_pct;
+    bool batt_ok;
 } sample_t;
 
 static sample_t latest_sample = {0};
@@ -111,6 +114,11 @@ char *make_post_json(void)
     cJSON_AddNumberToObject(sample, "t", latest_sample.t);
     cJSON_AddNumberToObject(sample, "h", latest_sample.h);
     cJSON_AddNumberToObject(sample, "p", latest_sample.p);
+
+    if (latest_sample.batt_ok) {
+        cJSON_AddNumberToObject(sample, "batt_v", latest_sample.batt_v);
+        cJSON_AddNumberToObject(sample, "batt_pct", latest_sample.batt_pct);
+    }
 
     cJSON_AddItemToObject(root, "sample", sample);
 
@@ -209,10 +217,16 @@ static void sample_and_post(void)
     s.h = get_humidity();
     s.p = get_pressure();
     err = ESP_OK;
+    s.batt_ok = false;
 #else
     err = i2c_reader_read(&s.t, &s.h, &s.p);
     if (err != ESP_OK) {
         add_log("Read failed: %s", esp_err_to_name(err));
+    }
+
+    s.batt_ok = (max17048_read(&s.batt_v, &s.batt_pct) == ESP_OK);
+    if (s.batt_ok) {
+        add_log("Battery: %.1f%% %.2fV", s.batt_pct, s.batt_v);
     }
 #endif
 
@@ -288,6 +302,11 @@ void app_main(void)
         sensor_power_off();
         vTaskDelay(pdMS_TO_TICKS(500));
         go_to_deep_sleep();
+    }
+
+    err = max17048_init();
+    if (err != ESP_OK) {
+        add_log("Battery gauge not available: %s", esp_err_to_name(err));
     }
 
     sample_and_post();

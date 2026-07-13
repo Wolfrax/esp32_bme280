@@ -325,3 +325,8 @@ esp_err_t i2c_reader_read(float *temp_c, float *hum_pct, float *press_hpa)
 
     return bme280_read_values(temp_c, press_hpa, hum_pct);
 }
+
+i2c_master_bus_handle_t i2c_reader_get_bus_handle(void)
+{
+    return bus_handle;
+}

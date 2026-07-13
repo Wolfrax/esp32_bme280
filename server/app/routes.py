@@ -14,7 +14,7 @@ MQTT_HOST = os.environ.get("MQTT_HOST", "localhost")
 MQTT_PORT = int(os.environ.get("MQTT_PORT", "1883"))
 
 
-def _mqtt_publish(node_id, node, temp, humidity, pressure):
+def _mqtt_publish(node_id, node, temp, humidity, pressure, batt_v=None, batt_pct=None):
     node_name = node.get("name", node_id)
     location = node.get("location", "")
     device_name = f"{node_name} {location}".strip()
@@ -32,6 +32,20 @@ def _mqtt_publish(node_id, node, temp, humidity, pressure):
         {"metric": "humidity",    "name": "Humidity",    "device_class": "humidity",              "unit": "%",   "key": "humidity"},
         {"metric": "pressure",    "name": "Pressure",    "device_class": "atmospheric_pressure",  "unit": "hPa", "key": "pressure"},
     ]
+
+    state = {
+        "temperature": round(temp, 2),
+        "humidity": round(humidity, 2),
+        "pressure": round(pressure, 2),
+    }
+
+    if batt_pct is not None:
+        sensors.append({"metric": "battery",         "name": "Battery",         "device_class": "battery",  "unit": "%", "key": "battery"})
+        state["battery"] = round(batt_pct, 2)
+
+    if batt_v is not None:
+        sensors.append({"metric": "battery_voltage", "name": "Battery Voltage", "device_class": "voltage",  "unit": "V", "key": "battery_voltage"})
+        state["battery_voltage"] = round(batt_v, 3)
 
     messages = []
     for s in sensors:
@@ -53,11 +67,7 @@ def _mqtt_publish(node_id, node, temp, humidity, pressure):
 
     messages.append({
         "topic": state_topic,
-        "payload": json.dumps({
-            "temperature": round(temp, 2),
-            "humidity": round(humidity, 2),
-            "pressure": round(pressure, 2),
-        }),
+        "payload": json.dumps(state),
         "retain": True,
         "qos": 1,
     })
@@ -102,7 +112,8 @@ class TimeWindowStore:
         self.lock = threading.Lock()
         self._load()
 
-    def add(self, temp, humidity, pressure, timestamp=None, node=None, logs=None):
+    def add(self, temp, humidity, pressure, timestamp=None, node=None, logs=None,
+             batt_v=None, batt_pct=None):
         timestamp = parse_timestamp(timestamp)
 
         entry = {
@@ -110,6 +121,8 @@ class TimeWindowStore:
             "h": float(humidity),
             "p": float(pressure),
             "ts": timestamp,
+            "batt_v": float(batt_v) if batt_v is not None else None,
+            "batt_pct": float(batt_pct) if batt_pct is not None else None,
         }
 
         with self.lock:
@@ -133,6 +146,8 @@ class TimeWindowStore:
                     "h": d["h"],
                     "p": d["p"],
                     "ts": d["ts"].isoformat(),
+                    "batt_v": d.get("batt_v"),
+                    "batt_pct": d.get("batt_pct"),
                 }
                 for d in self.data
             ]
@@ -161,6 +176,8 @@ class TimeWindowStore:
                     "h": d["h"],
                     "p": d["p"],
                     "ts": d["ts"].isoformat(),
+                    "batt_v": d.get("batt_v"),
+                    "batt_pct": d.get("batt_pct"),
                 }
                 for d in self.data
             ],
@@ -170,12 +187,17 @@ class TimeWindowStore:
         self.node = obj.get("node")
         self.logs = deque(obj.get("logs", []), maxlen=50)
 
+        def _optional_float(value):
+            return float(value) if value is not None else None
+
         return deque(
             {
                 "t": float(d["t"]),
                 "h": float(d["h"]),
                 "p": float(d["p"]),
                 "ts": parse_timestamp(d["ts"]),
+                "batt_v": _optional_float(d.get("batt_v")),
+                "batt_pct": _optional_float(d.get("batt_pct")),
             }
             for d in obj.get("data", [])
         )
@@ -283,6 +305,9 @@ def post_data():
 
         logs = data.get("logs", [])
 
+        batt_v = sample.get("batt_v")
+        batt_pct = sample.get("batt_pct")
+
         store.add(
             temp=sample["t"],
             humidity=sample["h"],
@@ -290,10 +315,13 @@ def post_data():
             timestamp=sample.get("ts"),
             node=node,
             logs=logs,
+            batt_v=batt_v,
+            batt_pct=batt_pct,
         )
 
         try:
-            _mqtt_publish(node_id, node, sample["t"], sample["h"], sample["p"])
+            _mqtt_publish(node_id, node, sample["t"], sample["h"], sample["p"],
+                          batt_v=batt_v, batt_pct=batt_pct)
         except Exception as mqtt_err:
             print(f"MQTT publish failed for {node_id}: {mqtt_err}")
 

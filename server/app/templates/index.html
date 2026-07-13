@@ -311,6 +311,11 @@
         <h3>Air Pressure</h3>
         <canvas id="pressChart"></canvas>
       </div>
+
+      <div class="card chart-card">
+        <h3>Battery</h3>
+        <canvas id="battChart"></canvas>
+      </div>
     </div>
 
     <div class="grid info">
@@ -352,7 +357,7 @@
   </div>
 
 <script>
-  let tempChart, humChart, pressChart;
+  let tempChart, humChart, pressChart, battChart;
   let sensorData = [];
   let refreshTimer = null;
   let sampleIntervalUs = 60 * 1000 * 1000;
@@ -448,7 +453,9 @@
       ts: sample.ts,
       t: Number(sample.t),
       h: Number(sample.h),
-      p: Number(sample.p)
+      p: Number(sample.p),
+      batt_v: sample.batt_v != null ? Number(sample.batt_v) : null,
+      batt_pct: sample.batt_pct != null ? Number(sample.batt_pct) : null
     };
   }
 
@@ -658,10 +665,12 @@
     if (tempChart) tempChart.destroy();
     if (humChart) humChart.destroy();
     if (pressChart) pressChart.destroy();
+    if (battChart) battChart.destroy();
 
     tempChart = buildChart("tempChart", "Temperature", sensorData.map(d => d.t), "°C");
     humChart = buildChart("humChart", "Humidity", sensorData.map(d => d.h), "%");
     pressChart = buildChart("pressChart", "Air Pressure", sensorData.map(d => d.p), "hPa");
+    battChart = buildChart("battChart", "Battery", sensorData.map(d => d.batt_pct), "%");
   }
 
   function refreshCharts() {
@@ -683,6 +692,12 @@
       pressChart.data.labels = labels;
       pressChart.data.datasets[0].data = sensorData.map(d => d.p);
       pressChart.update();
+    }
+
+    if (battChart) {
+      battChart.data.labels = labels;
+      battChart.data.datasets[0].data = sensorData.map(d => d.batt_pct);
+      battChart.update();
     }
   }
 
