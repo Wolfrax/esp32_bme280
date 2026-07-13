@@ -1,11 +1,12 @@
 idf_component_register(
-    SRCS 
-        "wifi.c" 
-        "i2c_reader.c" 
-        "main.c"  
+    SRCS
+        # "wifi.c"
+        "i2c_reader.c"
+        # "main.c"
         # "i2c_scanner.c"
+        "bme280_check.c"
     INCLUDE_DIRS "."
-    PRIV_REQUIRES 
+    PRIV_REQUIRES
         mdns
         esp_wifi
         esp_event
