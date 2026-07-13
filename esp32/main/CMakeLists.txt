@@ -3,8 +3,8 @@ idf_component_register(
         # "wifi.c"
         "i2c_reader.c"
         # "main.c"
-        # "i2c_scanner.c"
-        "bme280_check.c"
+        "i2c_scanner.c"
+        # "bme280_check.c"
     INCLUDE_DIRS "."
     PRIV_REQUIRES
         mdns
