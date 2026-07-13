@@ -30,26 +30,12 @@ void app_main(void)
 
     int found = 0;
     for (uint8_t addr = 0x08; addr <= 0x77; addr++) {
-        i2c_device_config_t dc = {
-            .dev_addr_length = I2C_ADDR_BIT_LEN_7,
-            .device_address  = addr,
-            .scl_speed_hz    = 100000,
-        };
-        i2c_master_dev_handle_t dev;
-        if (i2c_master_bus_add_device(bus, &dc, &dev) != ESP_OK) continue;
-
-        uint8_t reg = 0x00, buf[2] = {0};
-        esp_err_t wr = i2c_master_transmit(dev, &reg, 1, pdMS_TO_TICKS(10));
-        esp_err_t rd = i2c_master_receive(dev, buf, 1, pdMS_TO_TICKS(10));
-        i2c_master_bus_rm_device(dev);
-
-        if (wr == ESP_OK || rd == ESP_OK) {
-            ESP_LOGI(TAG, "  *** Found device at 0x%02X (WR=%s RD=%s) ***",
-                     addr, esp_err_to_name(wr), esp_err_to_name(rd));
+        esp_err_t err = i2c_master_probe(bus, addr, 20);
+        if (err == ESP_OK) {
+            ESP_LOGI(TAG, "  *** Found device at 0x%02X ***", addr);
             found++;
-        } else if (wr != ESP_ERR_INVALID_RESPONSE || rd != ESP_ERR_INVALID_RESPONSE) {
-            ESP_LOGW(TAG, "  0x%02X unexpected: WR=%s RD=%s",
-                     addr, esp_err_to_name(wr), esp_err_to_name(rd));
+        } else if (err != ESP_ERR_NOT_FOUND) {
+            ESP_LOGW(TAG, "  0x%02X unexpected: %s", addr, esp_err_to_name(err));
         }
     }
 
@@ -75,8 +61,7 @@ void app_main(void)
         ESP_LOGI(TAG, "--- read %d/5 ---", iter + 1);
         for (int i = 0; i < 3; i++) {
             uint8_t buf[2] = {0};
-            esp_err_t e = i2c_master_transmit(dev, &regs[i].reg, 1, pdMS_TO_TICKS(20));
-            if (e == ESP_OK) e = i2c_master_receive(dev, buf, 2, pdMS_TO_TICKS(20));
+            esp_err_t e = i2c_master_transmit_receive(dev, &regs[i].reg, 1, buf, 2, 100);
             if (e != ESP_OK) {
                 ESP_LOGW(TAG, "  %s read failed: %s", regs[i].name, esp_err_to_name(e));
                 continue;
