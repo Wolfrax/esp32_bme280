@@ -273,6 +273,12 @@
         <div class="subtle" id="latestTimePress">-</div>
       </div>
 
+      <div class="card" id="batteryStatCard" style="display:none;">
+        <div class="metric-label">Battery</div>
+        <div class="metric-value" id="latestBatt">-</div>
+        <div class="subtle" id="latestTimeBatt">-</div>
+      </div>
+
       <div class="card">
         <h3 style="margin-bottom:10px;">Status</h3>
         <div class="status-pill" id="liveStatus">Connecting…</div>
@@ -312,7 +318,7 @@
         <canvas id="pressChart"></canvas>
       </div>
 
-      <div class="card chart-card">
+      <div class="card chart-card" id="battChartCard" style="display:none;">
         <h3>Battery</h3>
         <canvas id="battChart"></canvas>
       </div>
@@ -388,23 +394,22 @@
   const apiPrefix = getApiPrefix();
   const nodeId = getNodeIdFromUrl();
 
-  const NODE_NAV = {
-    "esp32-7619F0_Viltstigen": {
-      href: "/esp32_bme280/node/esp32-761870_Gu_",
-      label: "Guö"
-    },
-    "esp32-761870_Gu_": {
-      href: "/esp32_bme280/node/esp32-7619F0_Viltstigen",
-      label: "Viltstigen Orangeri"
-    }
+  const NODES = {
+    "esp32-7619F0_Viltstigen": "Viltstigen Orangeri",
+    "esp32-761870_Gu_": "Guö",
+    "esp32-7BF158_Viltstigen_Outdoor": "Viltstigen Outdoor"
   };
 
   function renderNavLinks() {
     const el = document.getElementById("navLinks");
     if (!el || !nodeId) return;
-    const link = NODE_NAV[nodeId];
-    if (!link) return;
-    el.innerHTML = `<a href="${link.href}">${escapeHtml(link.label)}</a>`;
+
+    const links = Object.keys(NODES)
+      .filter(id => id !== nodeId)
+      .map(id => `<a href="/esp32_bme280/node/${encodeURIComponent(id)}">${escapeHtml(NODES[id])}</a>`)
+      .join("");
+
+    el.innerHTML = links;
   }
 
   function escapeHtml(value) {
@@ -553,6 +558,10 @@
     logEl.scrollTop = logEl.scrollHeight;
   }
 
+  function hasBatteryData(data) {
+    return data.some(d => d.batt_pct != null);
+  }
+
   function updateLatest(data) {
     if (!data.length) return;
 
@@ -566,6 +575,18 @@
     document.getElementById("latestTimeTemp").textContent = timeText;
     document.getElementById("latestTimeHum").textContent = timeText;
     document.getElementById("latestTimePress").textContent = timeText;
+
+    const battCard = document.getElementById("batteryStatCard");
+    if (hasBatteryData(data)) {
+      battCard.style.display = "";
+      const lastBatt = [...data].reverse().find(d => d.batt_pct != null);
+      if (lastBatt) {
+        document.getElementById("latestBatt").textContent = `${lastBatt.batt_pct.toFixed(1)} %`;
+        document.getElementById("latestTimeBatt").textContent = formatTime(lastBatt.ts);
+      }
+    } else {
+      battCard.style.display = "none";
+    }
 
     document.getElementById("sampleCount").textContent = data.length;
   }
@@ -612,6 +633,7 @@
     document.getElementById("latestTimeTemp").textContent = "-";
     document.getElementById("latestTimeHum").textContent = "-";
     document.getElementById("latestTimePress").textContent = "-";
+    document.getElementById("batteryStatCard").style.display = "none";
     document.getElementById("sampleCount").textContent = "0";
     document.getElementById("extremes").textContent = "No data available.";
   }
@@ -666,11 +688,17 @@
     if (humChart) humChart.destroy();
     if (pressChart) pressChart.destroy();
     if (battChart) battChart.destroy();
+    battChart = null;
 
     tempChart = buildChart("tempChart", "Temperature", sensorData.map(d => d.t), "°C");
     humChart = buildChart("humChart", "Humidity", sensorData.map(d => d.h), "%");
     pressChart = buildChart("pressChart", "Air Pressure", sensorData.map(d => d.p), "hPa");
-    battChart = buildChart("battChart", "Battery", sensorData.map(d => d.batt_pct), "%");
+
+    const showBatt = hasBatteryData(sensorData);
+    document.getElementById("battChartCard").style.display = showBatt ? "" : "none";
+    if (showBatt) {
+      battChart = buildChart("battChart", "Battery", sensorData.map(d => d.batt_pct), "%");
+    }
   }
 
   function refreshCharts() {
@@ -694,7 +722,11 @@
       pressChart.update();
     }
 
-    if (battChart) {
+    const showBatt = hasBatteryData(sensorData);
+    document.getElementById("battChartCard").style.display = showBatt ? "" : "none";
+    if (showBatt && !battChart) {
+      battChart = buildChart("battChart", "Battery", sensorData.map(d => d.batt_pct), "%");
+    } else if (battChart) {
       battChart.data.labels = labels;
       battChart.data.datasets[0].data = sensorData.map(d => d.batt_pct);
       battChart.update();
