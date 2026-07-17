@@ -47,17 +47,34 @@ def _mqtt_publish(node_id, node, temp, humidity, pressure, batt_v=None, batt_pct
         sensors.append({"metric": "battery_voltage", "name": "Battery Voltage", "device_class": "voltage",  "unit": "V", "key": "battery_voltage"})
         state["battery_voltage"] = round(batt_v, 3)
 
+    boot_count = node.get("boot_count")
+    if boot_count is not None:
+        sensors.append({
+            "metric": "boot_count", "name": "Boot Count", "key": "boot_count",
+            "state_class": "total_increasing", "icon": "mdi:counter",
+            "entity_category": "diagnostic",
+        })
+        state["boot_count"] = int(boot_count)
+
     messages = []
     for s in sensors:
         config = {
             "name": s["name"],
-            "device_class": s["device_class"],
             "state_topic": state_topic,
-            "unit_of_measurement": s["unit"],
             "value_template": f"{{{{ value_json.{s['key']} }}}}",
             "unique_id": f"{node_id}_{s['metric']}",
             "device": device_info,
         }
+        if s.get("device_class"):
+            config["device_class"] = s["device_class"]
+        if s.get("unit"):
+            config["unit_of_measurement"] = s["unit"]
+        if s.get("state_class"):
+            config["state_class"] = s["state_class"]
+        if s.get("icon"):
+            config["icon"] = s["icon"]
+        if s.get("entity_category"):
+            config["entity_category"] = s["entity_category"]
         messages.append({
             "topic": f"homeassistant/sensor/{node_id}_{s['metric']}/config",
             "payload": json.dumps(config),
