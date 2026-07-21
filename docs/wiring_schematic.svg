@@ -1,0 +1,214 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1340 1000" font-family="Helvetica, Arial, sans-serif">
+
+  <!-- background -->
+  <rect x="0" y="0" width="1340" height="1000" fill="#ffffff"/>
+
+  <!-- title -->
+  <text x="670" y="28" text-anchor="middle" font-size="20" font-weight="bold" fill="#111">
+    ESP32-C3-DevKit-LiPo (Rev B) + BME280 + MAX17048 — Wiring Schematic
+  </text>
+
+  <!-- ============ OLIMEX BOARD ============ -->
+  <rect x="320" y="50" width="300" height="690" rx="12" fill="#eef6ff" stroke="#2b6cb0" stroke-width="2"/>
+  <text x="470" y="75" text-anchor="middle" font-size="14" font-weight="bold" fill="#1a4971">Olimex ESP32-C3-DevKit-LiPo Rev B</text>
+  <text x="470" y="92" text-anchor="middle" font-size="11" fill="#1a4971">(no Qwiic port — bare 0.1" headers)</text>
+
+  <!-- EXT1 header (left edge), pins 1-9 -->
+  <text x="320" y="112" text-anchor="middle" font-size="12" font-weight="bold" fill="#1a4971">EXT1</text>
+  <g font-size="11" fill="#333">
+    <line x1="300" y1="130" x2="320" y2="130" stroke="#999" stroke-width="2"/>
+    <circle cx="300" cy="130" r="3" fill="#999"/>
+    <text x="293" y="134" text-anchor="end">1  +5V_USB</text>
+
+    <line x1="300" y1="190" x2="320" y2="190" stroke="#1a1a1a" stroke-width="3"/>
+    <circle cx="300" cy="190" r="4" fill="#1a1a1a"/>
+    <text x="293" y="194" text-anchor="end" font-weight="bold">2  GND</text>
+
+    <line x1="300" y1="250" x2="320" y2="250" stroke="#999" stroke-width="2"/>
+    <circle cx="300" cy="250" r="3" fill="#999"/>
+    <text x="293" y="254" text-anchor="end">3  GPIO0</text>
+
+    <line x1="300" y1="310" x2="320" y2="310" stroke="#999" stroke-width="2"/>
+    <circle cx="300" cy="310" r="3" fill="#999"/>
+    <text x="293" y="314" text-anchor="end">4  GPIO1</text>
+
+    <line x1="300" y1="370" x2="320" y2="370" stroke="#999" stroke-width="2"/>
+    <circle cx="300" cy="370" r="3" fill="#999"/>
+    <text x="293" y="374" text-anchor="end">5  GPIO2</text>
+
+    <line x1="300" y1="430" x2="320" y2="430" stroke="#999" stroke-width="2"/>
+    <circle cx="300" cy="430" r="3" fill="#999"/>
+    <text x="293" y="434" text-anchor="end">6  GPIO3</text>
+
+    <line x1="300" y1="490" x2="320" y2="490" stroke="#999" stroke-width="2"/>
+    <circle cx="300" cy="490" r="3" fill="#999"/>
+    <text x="293" y="494" text-anchor="end">7  GPIO4</text>
+
+    <line x1="300" y1="550" x2="320" y2="550" stroke="#d62728" stroke-width="3"/>
+    <circle cx="300" cy="550" r="4" fill="#d62728"/>
+    <text x="293" y="554" text-anchor="end" font-weight="bold">8  GPIO5 (SENSOR_PWR)</text>
+
+    <line x1="300" y1="610" x2="320" y2="610" stroke="#1f77b4" stroke-width="3"/>
+    <circle cx="300" cy="610" r="4" fill="#1f77b4"/>
+    <text x="293" y="614" text-anchor="end" font-weight="bold">9  GPIO6 (I2C SDA)</text>
+  </g>
+
+  <!-- EXT2 header (right edge), pins 1-9 -->
+  <text x="620" y="112" text-anchor="middle" font-size="12" font-weight="bold" fill="#1a4971">EXT2</text>
+  <g font-size="11" fill="#333">
+    <line x1="620" y1="130" x2="640" y2="130" stroke="#999" stroke-width="2" stroke-dasharray="4,3"/>
+    <circle cx="640" cy="130" r="3" fill="#999"/>
+    <text x="647" y="134">1  +3.3V (always-on, optional alt)</text>
+
+    <line x1="620" y1="190" x2="640" y2="190" stroke="#999" stroke-width="2"/>
+    <circle cx="640" cy="190" r="3" fill="#999"/>
+    <text x="647" y="194">2  GND</text>
+
+    <line x1="620" y1="250" x2="640" y2="250" stroke="#999" stroke-width="2"/>
+    <circle cx="640" cy="250" r="3" fill="#999"/>
+    <text x="647" y="254">3  ESP_EN</text>
+
+    <line x1="620" y1="310" x2="640" y2="310" stroke="#999" stroke-width="2"/>
+    <circle cx="640" cy="310" r="3" fill="#999"/>
+    <text x="647" y="314">4  GPIO21 / U0TXD</text>
+
+    <line x1="620" y1="370" x2="640" y2="370" stroke="#999" stroke-width="2"/>
+    <circle cx="640" cy="370" r="3" fill="#999"/>
+    <text x="647" y="374">5  GPIO20 / U0RXD</text>
+
+    <line x1="620" y1="430" x2="640" y2="430" stroke="#999" stroke-width="2"/>
+    <circle cx="640" cy="430" r="3" fill="#999"/>
+    <text x="647" y="434">6  GPIO10</text>
+
+    <line x1="620" y1="490" x2="640" y2="490" stroke="#999" stroke-width="2"/>
+    <circle cx="640" cy="490" r="3" fill="#999"/>
+    <text x="647" y="494">7  GPIO9 (strap / USER btn)</text>
+
+    <line x1="620" y1="550" x2="640" y2="550" stroke="#999" stroke-width="2"/>
+    <circle cx="640" cy="550" r="3" fill="#999"/>
+    <text x="647" y="554">8  GPIO8 (strap / USER LED)</text>
+
+    <line x1="620" y1="610" x2="640" y2="610" stroke="#2ca02c" stroke-width="3"/>
+    <circle cx="640" cy="610" r="4" fill="#2ca02c"/>
+    <text x="647" y="614" font-weight="bold">9  GPIO7 (I2C SCL)</text>
+  </g>
+
+  <!-- BAT1 connector at bottom of Olimex board -->
+  <rect x="445" y="700" width="50" height="22" rx="3" fill="#fff" stroke="#555" stroke-width="1.5"/>
+  <text x="470" y="715" text-anchor="middle" font-size="10" fill="#333">BAT1</text>
+  <line x1="465" y1="722" x2="465" y2="745" stroke="#ff7f0e" stroke-width="3"/>
+  <line x1="480" y1="722" x2="480" y2="745" stroke="#1a1a1a" stroke-width="3"/>
+  <text x="470" y="760" text-anchor="middle" font-size="10" fill="#555">on-board LiPo charger input</text>
+
+  <!-- ============ signal wires: EXT1/EXT2 -> adapter ============ -->
+  <!-- GND -->
+  <polyline points="320,190 600,190 600,335 760,335" fill="none" stroke="#1a1a1a" stroke-width="2.5"/>
+  <!-- GPIO5 -> switched 3V3 -->
+  <polyline points="320,550 590,550 590,350 760,350" fill="none" stroke="#d62728" stroke-width="2.5"/>
+  <text x="600" y="345" font-size="10" fill="#d62728">GPIO5 → switched 3V3</text>
+  <!-- SDA -->
+  <polyline points="320,610 605,610 605,365 760,365" fill="none" stroke="#1f77b4" stroke-width="2.5"/>
+  <!-- SCL -->
+  <polyline points="640,610 640,605 655,605 655,380 760,380" fill="none" stroke="#2ca02c" stroke-width="2.5"/>
+  <!-- optional always-on 3V3 alt -->
+  <polyline points="640,130 668,130 668,350 760,350" fill="none" stroke="#999" stroke-width="2" stroke-dasharray="4,3"/>
+
+  <!-- ============ QWIIC BREAKOUT ADAPTER ============ -->
+  <rect x="760" y="280" width="170" height="110" rx="10" fill="#f5f0ff" stroke="#6b46c1" stroke-width="2"/>
+  <text x="845" y="300" text-anchor="middle" font-size="12" font-weight="bold" fill="#4a2d8f">Qwiic-to-jumper</text>
+  <text x="845" y="314" text-anchor="middle" font-size="12" font-weight="bold" fill="#4a2d8f">pigtail / adapter</text>
+  <g font-size="10" fill="#333">
+    <circle cx="760" cy="335" r="3" fill="#1a1a1a"/><text x="752" y="339" text-anchor="end">GND</text>
+    <circle cx="760" cy="350" r="3" fill="#d62728"/><text x="752" y="354" text-anchor="end">3V3</text>
+    <circle cx="760" cy="365" r="3" fill="#1f77b4"/><text x="752" y="369" text-anchor="end">SDA</text>
+    <circle cx="760" cy="380" r="3" fill="#2ca02c"/><text x="752" y="384" text-anchor="end">SCL</text>
+  </g>
+  <rect x="900" y="320" width="26" height="26" rx="4" fill="#fff" stroke="#6b46c1" stroke-width="1.5"/>
+  <text x="913" y="338" text-anchor="middle" font-size="9" fill="#4a2d8f">JST</text>
+
+  <!-- ============ BME280 ============ -->
+  <rect x="1030" y="90" width="240" height="130" rx="10" fill="#e6ffed" stroke="#2f855a" stroke-width="2"/>
+  <text x="1150" y="112" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e5b3c">BME280</text>
+  <text x="1150" y="128" text-anchor="middle" font-size="11" fill="#1e5b3c">(Qwiic / STEMMA QT breakout)</text>
+  <rect x="1010" y="145" width="26" height="26" rx="4" fill="#fff" stroke="#2f855a" stroke-width="1.5"/>
+  <text x="1023" y="163" text-anchor="middle" font-size="9" fill="#1e5b3c">JST</text>
+  <rect x="1264" y="145" width="26" height="26" rx="4" fill="#fff" stroke="#2f855a" stroke-width="1.5"/>
+  <text x="1277" y="163" text-anchor="middle" font-size="9" fill="#1e5b3c">JST</text>
+
+  <!-- adapter -> BME280 (bundled qwiic cable) -->
+  <g stroke-width="2">
+    <line x1="926" y1="328" x2="1010" y2="150" stroke="#1a1a1a"/>
+    <line x1="926" y1="332" x2="1010" y2="154" stroke="#d62728"/>
+    <line x1="926" y1="336" x2="1010" y2="158" stroke="#1f77b4"/>
+    <line x1="926" y1="340" x2="1010" y2="162" stroke="#2ca02c"/>
+  </g>
+  <text x="945" y="245" font-size="10" fill="#555">Qwiic/STEMMA QT cable</text>
+
+  <!-- ============ MAX17048 ============ -->
+  <rect x="1030" y="320" width="240" height="220" rx="10" fill="#fff5e6" stroke="#c05621" stroke-width="2"/>
+  <text x="1150" y="342" text-anchor="middle" font-size="13" font-weight="bold" fill="#8a4513">Adafruit MAX17048</text>
+  <text x="1150" y="358" text-anchor="middle" font-size="11" fill="#8a4513">Battery Monitor (PID 5580)</text>
+
+  <rect x="1010" y="375" width="26" height="26" rx="4" fill="#fff" stroke="#c05621" stroke-width="1.5"/>
+  <text x="1023" y="393" text-anchor="middle" font-size="9" fill="#8a4513">JST</text>
+  <text x="1000" y="412" text-anchor="middle" font-size="9" fill="#555">Qwiic in</text>
+
+  <rect x="1010" y="470" width="26" height="26" rx="4" fill="#fff" stroke="#ff7f0e" stroke-width="1.5"/>
+  <text x="1023" y="488" text-anchor="middle" font-size="9" fill="#8a4513">JST</text>
+  <text x="1000" y="510" text-anchor="middle" font-size="9" fill="#555">Battery port A</text>
+
+  <rect x="1264" y="470" width="26" height="26" rx="4" fill="#fff" stroke="#ff7f0e" stroke-width="1.5"/>
+  <text x="1277" y="488" text-anchor="middle" font-size="9" fill="#8a4513">JST</text>
+  <text x="1277" y="510" text-anchor="middle" font-size="9" fill="#555">Battery port B</text>
+  <text x="1150" y="565" text-anchor="middle" font-size="9" fill="#777">(the two battery ports are equivalent / pass-through)</text>
+
+  <!-- BME280 second JST -> MAX17048 qwiic in (bundled cable) -->
+  <g stroke-width="2">
+    <line x1="1264" y1="151" x2="1036" y2="378" stroke="#1a1a1a"/>
+    <line x1="1268" y1="155" x2="1040" y2="382" stroke="#d62728"/>
+    <line x1="1272" y1="159" x2="1044" y2="386" stroke="#1f77b4"/>
+    <line x1="1276" y1="163" x2="1048" y2="390" stroke="#2ca02c"/>
+  </g>
+  <text x="1130" y="270" font-size="10" fill="#555">Qwiic/STEMMA QT cable</text>
+
+  <!-- ============ BATTERY ============ -->
+  <rect x="40" y="640" width="170" height="90" rx="10" fill="#fff8e1" stroke="#b8860b" stroke-width="2"/>
+  <text x="125" y="668" text-anchor="middle" font-size="13" font-weight="bold" fill="#6b5300">LiPo Battery</text>
+  <text x="125" y="684" text-anchor="middle" font-size="11" fill="#6b5300">3.7V, JST-PH 2-pin</text>
+  <text x="125" y="700" text-anchor="middle" font-size="11" fill="#6b5300">(Olimex-recommended)</text>
+  <circle cx="210" cy="660" r="4" fill="#ff7f0e"/>
+  <text x="218" y="664" font-size="10" fill="#8a4513">+</text>
+  <circle cx="210" cy="700" r="4" fill="#1a1a1a"/>
+  <text x="218" y="704" font-size="10" fill="#333">−</text>
+
+  <!-- battery+ : main run to BAT1, tap run to MAX17048 port A -->
+  <polyline points="210,660 465,660 465,745" fill="none" stroke="#ff7f0e" stroke-width="3"/>
+  <circle cx="240" cy="660" r="4" fill="#ff7f0e"/>
+  <polyline points="240,660 240,770 970,770 970,483 1010,483" fill="none" stroke="#ff7f0e" stroke-width="3"/>
+
+  <!-- battery- : main run to BAT1, tap run to MAX17048 port A -->
+  <polyline points="210,700 480,700 480,745" fill="none" stroke="#1a1a1a" stroke-width="3"/>
+  <circle cx="260" cy="700" r="4" fill="#1a1a1a"/>
+  <polyline points="260,700 260,782 985,782 985,493 1010,493" fill="none" stroke="#1a1a1a" stroke-width="3"/>
+
+  <text x="600" y="755" font-size="10" fill="#8a4513">JST-PH pigtail — one battery, two equivalent taps</text>
+
+  <!-- WARNING box -->
+  <rect x="40" y="805" width="700" height="80" rx="8" fill="#fff0f0" stroke="#c53030" stroke-width="2"/>
+  <text x="58" y="830" font-size="13" font-weight="bold" fill="#9b1c1c">⚠ Verify polarity with a multimeter before connecting the battery to anything.</text>
+  <text x="58" y="850" font-size="11" fill="#9b1c1c">JST-PH 2-pin connectors are not keyed the same way across every vendor. Confirm the +/− silkscreen on the</text>
+  <text x="58" y="867" font-size="11" fill="#9b1c1c">Olimex BAT1 pads and on the MAX17048 board match your battery's wire colors before plugging anything in.</text>
+
+  <!-- LEGEND -->
+  <rect x="780" y="805" width="520" height="160" rx="8" fill="#fafafa" stroke="#999" stroke-width="1.5"/>
+  <text x="798" y="827" font-size="12" font-weight="bold" fill="#222">Legend</text>
+  <g font-size="11" fill="#333">
+    <line x1="798" y1="843" x2="828" y2="843" stroke="#1a1a1a" stroke-width="3"/><text x="836" y="847">GND</text>
+    <line x1="798" y1="863" x2="828" y2="863" stroke="#d62728" stroke-width="3"/><text x="836" y="867">3.3V, switched via GPIO5 (SENSOR_PWR)</text>
+    <line x1="798" y1="883" x2="828" y2="883" stroke="#1f77b4" stroke-width="3"/><text x="836" y="887">I2C SDA</text>
+    <line x1="798" y1="903" x2="828" y2="903" stroke="#2ca02c" stroke-width="3"/><text x="836" y="907">I2C SCL</text>
+    <line x1="798" y1="923" x2="828" y2="923" stroke="#ff7f0e" stroke-width="3"/><text x="836" y="927">Battery+ (raw VBAT, not regulated 3.3V)</text>
+    <line x1="798" y1="943" x2="828" y2="943" stroke="#999" stroke-width="2" stroke-dasharray="4,3"/><text x="836" y="947">Optional / alternate wiring</text>
+  </g>
+
+</svg>
